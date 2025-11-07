@@ -1,0 +1,133 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                       kmtest Package - Test Results Comparison                ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ BEFORE FIXES (4 failures, 12 passes)                                        │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+tests/test_kmtest.py::TestHelpers::test_create_lags PASSED              [  6%]
+tests/test_kmtest.py::TestHelpers::test_select_lag_order PASSED         [ 12%]
+tests/test_kmtest.py::TestHelpers::test_detect_drift FAILED             [ 18%] ✗
+tests/test_kmtest.py::TestV1Test::test_v1_basic FAILED                  [ 25%] ✗
+tests/test_kmtest.py::TestV1Test::test_v1_invalid_input PASSED          [ 31%]
+tests/test_kmtest.py::TestV1Test::test_v1_specified_lag PASSED          [ 37%]
+tests/test_kmtest.py::TestV2Test::test_v2_basic FAILED                  [ 43%] ✗
+tests/test_kmtest.py::TestV2Test::test_v2_invalid_input PASSED          [ 50%]
+tests/test_kmtest.py::TestU1Test::test_u1_basic PASSED                  [ 56%]
+tests/test_kmtest.py::TestU2Test::test_u2_basic PASSED                  [ 62%]
+tests/test_kmtest.py::TestTestSuite::test_suite_with_drift FAILED       [ 68%] ✗
+tests/test_kmtest.py::TestTestSuite::test_suite_without_drift PASSED    [ 75%]
+tests/test_kmtest.py::TestTestSuite::test_suite_forced_drift PASSED     [ 81%]
+tests/test_kmtest.py::TestTestSuite::test_suite_summary PASSED          [ 87%]
+tests/test_kmtest.py::TestResultObjects::test_result_str PASSED         [ 93%]
+tests/test_kmtest.py::TestResultObjects::test_suite_result_str PASSED   [100%]
+
+═══════════════════════════════════════════════════════════════════════════════
+FAILURES
+═══════════════════════════════════════════════════════════════════════════════
+
+TestHelpers.test_detect_drift
+  ✗ assert True is True
+  Issue: numpy.bool_ is not identical to Python bool
+
+TestV1Test.test_v1_basic
+  ✗ assert isinstance(result.reject_null, bool)
+  Issue: result.reject_null is numpy.bool_, not Python bool
+
+TestV2Test.test_v2_basic
+  ✗ assert isinstance(result.reject_null, bool)
+  Issue: result.reject_null is numpy.bool_, not Python bool
+
+TestTestSuite.test_suite_with_drift
+  ✗ assert isinstance(result.has_drift, bool)
+  Issue: result.has_drift is numpy.bool_, not Python bool
+
+════════════════════════════════════════════════════════════════════════════════
+4 failed, 12 passed in 1.67s
+════════════════════════════════════════════════════════════════════════════════
+
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ AFTER FIXES (0 failures, 16 passes)                                         │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+tests/test_kmtest.py::TestHelpers::test_create_lags PASSED              [  6%] ✓
+tests/test_kmtest.py::TestHelpers::test_select_lag_order PASSED         [ 12%] ✓
+tests/test_kmtest.py::TestHelpers::test_detect_drift PASSED             [ 18%] ✓
+tests/test_kmtest.py::TestV1Test::test_v1_basic PASSED                  [ 25%] ✓
+tests/test_kmtest.py::TestV1Test::test_v1_invalid_input PASSED          [ 31%] ✓
+tests/test_kmtest.py::TestV1Test::test_v1_specified_lag PASSED          [ 37%] ✓
+tests/test_kmtest.py::TestV2Test::test_v2_basic PASSED                  [ 43%] ✓
+tests/test_kmtest.py::TestV2Test::test_v2_invalid_input PASSED          [ 50%] ✓
+tests/test_kmtest.py::TestU1Test::test_u1_basic PASSED                  [ 56%] ✓
+tests/test_kmtest.py::TestU2Test::test_u2_basic PASSED                  [ 62%] ✓
+tests/test_kmtest.py::TestTestSuite::test_suite_with_drift PASSED       [ 68%] ✓
+tests/test_kmtest.py::TestTestSuite::test_suite_without_drift PASSED    [ 75%] ✓
+tests/test_kmtest.py::TestTestSuite::test_suite_forced_drift PASSED     [ 81%] ✓
+tests/test_kmtest.py::TestTestSuite::test_suite_summary PASSED          [ 87%] ✓
+tests/test_kmtest.py::TestResultObjects::test_result_str PASSED         [ 93%] ✓
+tests/test_kmtest.py::TestResultObjects::test_suite_result_str PASSED   [100%] ✓
+
+════════════════════════════════════════════════════════════════════════════════
+16 passed in ~1.67s ✓
+════════════════════════════════════════════════════════════════════════════════
+
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ SUMMARY                                                                      │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+Success Rate:     75% → 100% (+25%)
+Tests Passing:    12  → 16   (+4)
+Tests Failing:    4   → 0    (-4)
+
+Root Cause:       NumPy boolean type incompatibility
+Solution:         Explicit bool() conversion on all comparisons
+Files Modified:   3 (helpers.py, km_tests.py, test_suite.py)
+Changes Made:     6 locations
+Lines Changed:    ~10 lines total
+
+Impact:           ✓ No functional changes
+                  ✓ 100% backward compatible  
+                  ✓ Ready for production
+
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ FILES CHANGED                                                                │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+helpers.py        Line 159        return bool(p_value < alpha)
+km_tests.py       Line 81         reject = bool(abs(V1) > ...)
+km_tests.py       Lines 154-156   reject_dict = {'0.10': bool(...), ...}
+km_tests.py       Line 233        reject = bool(abs(V2) > ...)
+km_tests.py       Lines 308-310   reject_dict = {'0.10': bool(...), ...}
+test_suite.py     Lines 61-68     has_drift = bool(has_drift)
+
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ TECHNICAL EXPLANATION                                                        │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+Problem:
+  NumPy comparison operations (>, <, ==) return numpy.bool_ instead of 
+  Python's native bool type. While numpy.bool_ behaves like bool in most
+  contexts, it fails isinstance() checks and identity comparisons (is True).
+
+Example:
+  >>> import numpy as np
+  >>> result = np.array([1.0]) < 0.5  # Returns numpy.bool_(False)
+  >>> isinstance(result, bool)         # False ✗
+  >>> result is False                  # False ✗
+
+Solution:
+  >>> result = bool(np.array([1.0]) < 0.5)  # Returns Python False
+  >>> isinstance(result, bool)              # True ✓
+  >>> result is False                       # True ✓
+
+Impact:
+  All functions now return proper Python bool types, satisfying type hints
+  and passing isinstance() checks. No changes to test logic or behavior.
+
+
+══════════════════════════════════════════════════════════════════════════════
